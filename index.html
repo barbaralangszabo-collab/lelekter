@@ -6,15 +6,16 @@
 <title>Lélektér – mentálhigiénés foglalkozások osztályfőnöki órákra</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="color-scheme" content="only light">
-<meta name="theme-color" content="#7B2A82">
+<meta name="theme-color" content="#9373A8">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-<meta name="apple-mobile-web-app-title" content="Vibe Check">
-<meta name="application-name" content="Vibe Check">
+<meta name="apple-mobile-web-app-title" content="Lélektér">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="application-name" content="Lélektér">
 <meta name="description" content="Mentálhigiénés foglalkozások 45 perces osztályfőnöki órákra, 5–12. évfolyam: heti egy óra, kivetíthető és nyomtatható segédanyagokkal.">
 <meta property="og:type" content="website">
-<meta property="og:site_name" content="Vibe Check">
+<meta property="og:site_name" content="Lélektér">
 <meta property="og:title" content="Lélektér – Mentálhigiénés foglalkozások osztályfőnöki órákra">
 <meta property="og:description" content="Mentálhigiénés foglalkozások 45 perces osztályfőnöki órákra, kivetíthető és nyomtatható segédanyagokkal.">
 <meta property="og:image" content="og-image.png">
@@ -1382,7 +1383,7 @@ async function qfbSave(aid, rating, tip){
   await LOG.setFeedback(sess.id, aid, rating, tip);
 }
 function fbEditor(sess){
-  if (!sess) return '';
+  if (!sess || LT) return '';   // a Lélektérben nincs értékelés
   return `<div class="fbed"><h5>Hogyan működtek? (a tippet minden osztályfőnök látja, név nélkül)</h5>
     ${sess.items.filter(act).map(aid => { const f = myFb(sess.id, aid); return `<div class="fbrow"><b>${esc(act(aid).name)}</b>
       <div class="rate">${[[3, '👍 Működött'], [2, '🤔 Részben'], [1, '👎 Nem']].map(([r, l]) => `<button class="r${r}" aria-pressed="${f && f.rating === r}" data-rate="${sess.id}|${aid}|${r}">${l}</button>`).join('')}</div>
@@ -2273,16 +2274,16 @@ function renderRun(){
     const g = R.planId ? myGroupFor(S.plans.find(x => x.id === R.planId)?.grade) : curG();
     const already = R.planId && g ? myDone(R.planId, g.id) : null;
     el.innerHTML = top + `<div class="rn-main" style="display:block"><div class="rn-end">
-      <div class="rn-k">Az óra vége</div><h1>Hogyan sikerült?</h1>
-      <p style="color:#cfc8dc;font-size:19.5px;margin:0 0 14px">Értékeld a gyakorlatokat: jelöld mindegyiknél, hogy működött-e. Végül alul jelöld, hogy megtartottátok. A tippet név nélkül a kollégáid is látják, a megjegyzést viszont csak te.</p>
-      ${R.ids.map(aid => `<div class="fbrow" style="padding:10px 0"><b style="font-size:19.5px">${esc(act(aid).name)}</b>
+      <div class="rn-k">Az óra vége</div><h1>${LT ? 'Megtartottátok az órát?' : 'Hogyan sikerült?'}</h1>
+      <p style="color:#cfc8dc;font-size:19.5px;margin:0 0 14px">${LT ? 'Jelöld, hogy megtartottátok az órát. Ha szeretnél, írj magadnak egy megjegyzést: ezt csak te látod.' : 'Értékeld a gyakorlatokat: jelöld mindegyiknél, hogy működött-e. Végül alul jelöld, hogy megtartottátok. A tippet név nélkül a kollégáid is látják, a megjegyzést viszont csak te.'}</p>
+      ${LT ? '' : R.ids.map(aid => `<div class="fbrow" style="padding:10px 0"><b style="font-size:19.5px">${esc(act(aid).name)}</b>
         <div class="rate">${[[3, '👍 Működött'], [2, '🤔 Részben'], [1, '👎 Nem']].map(([r, l]) => `<button class="r${r}" aria-pressed="${R.rate[aid] === r}" data-rrate="${aid}|${r}">${l}</button>`).join('')}</div>
         <input data-rtip="${aid}" placeholder="Tipp a kollégáknak (nem kötelező)" value="${esc(R.tip[aid] || '')}"></div>`).join('')}
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px">
-        <label style="color:#cfc8dc;font-size:17.5px">Csoport<select id="rnGroup">${S.groups.filter(x => !R.planId || x.grade === S.plans.find(p => p.id === R.planId)?.grade).map(x => `<option value="${x.id}" ${g && g.id === x.id ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select></label>
+      <div style="display:grid;grid-template-columns:${LT ? '1fr' : '1fr 1fr'};gap:10px;margin-top:16px">
+        <label style="color:#cfc8dc;font-size:17.5px;${LT ? 'display:none' : ''}">Csoport<select id="rnGroup">${S.groups.filter(x => !R.planId || x.grade === S.plans.find(p => p.id === R.planId)?.grade).map(x => `<option value="${x.id}" ${g && g.id === x.id ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select></label>
         <label style="color:#cfc8dc;font-size:17.5px">Saját megjegyzés<input id="rnNote" placeholder="csak te látod" value="${esc(R.note)}"></label>
       </div>
-      ${already ? '<p style="color:#b9e59c;margin-top:12px">Ezt az órát már bejelölted, ezért most csak az értékeléseket mentjük el.</p>' : ''}
+      ${already ? `<p style="color:#b9e59c;margin-top:12px">${LT ? 'Ezt az órát már bejelölted.' : 'Ezt az órát már bejelölted, ezért most csak az értékeléseket mentjük el.'}</p>` : ''}
     </div></div>
     <div class="rn-bot"><button class="btn" data-rngo="${R.ids.length - 1}">‹ Vissza</button><button class="btn go" id="rnSave">✓ Megtartottuk, mentjük</button></div>`;
     return;

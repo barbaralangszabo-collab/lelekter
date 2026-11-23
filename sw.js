@@ -1,6 +1,6 @@
 /* Lélektér – service worker: az app gyorsan és gyenge wifi mellett is betölt.
    A Supabase-ből érkező adatokat és PDF-eket NEM tárolja (azok mindig frissek, és privátak). */
-const V = 'lelekter-v1';
+const V = 'lelekter-v2';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png'];
 
 self.addEventListener('install', e => {
