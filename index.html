@@ -1884,7 +1884,7 @@ function viewCsibek(){
       ${rest.length ? `<h2 class="cs-sub">Következő</h2><div class="clist">${rest.slice(0, 4).map(csibeRow).join('')}</div>${rest.length > 4 ? `<div style="margin-top:12px">${fold('laterc', `A tanév többi órája <small>· ${rest.length - 4}</small>`, `<div class="clist">${rest.slice(4).map(csibeRow).join('')}</div>`, false)}</div>` : ''}` : ''}
       <div style="margin-top:18px">${fold('shop', '🛒 Beszerzési lista a tanév elejére', shopList(g.grade), false)}</div>
       ${past.length ? `<div style="margin-top:18px">${fold('pastc', `Korábbi órák <small>· ${past.length}</small>`, `<div class="clist">${past.map(csibeRow).join('')}</div>`, !!missing)}</div>` : ''}`}
-    ${canEdit() ? `<div style="margin-top:18px">${fold('admin', '📈 Osztályfőnökok, összesítés, visszajelzések <small>· adminnak</small>', adminOverview(), false)}</div>` : ''}
+    ${!LT && canEdit() ? `<div style="margin-top:18px">${fold('admin', '📈 Osztályfőnökok, összesítés, visszajelzések <small>· adminnak</small>', adminOverview(), false)}</div>` : ''}
     <div style="height:40px"></div></main>`;
 }
 function viewBank(){
@@ -2067,7 +2067,7 @@ function viewCalendar(){
       </div>
       <div class="side">${g ? schedBox(g.grade) : ''}</div>
     </div>
-    ${(S.admin || S.mode === 'demo') ? fold('admin', '📈 Összesítés évfolyamonként <small>· adminnak</small>', adminOverview(), false) : ''}
+    ${!LT && (S.admin || S.mode === 'demo') ? fold('admin', '📈 Összesítés évfolyamonként <small>· adminnak</small>', adminOverview(), false) : ''}
   </main>`;
 }
 /* Osztályfőnökok meghívása (admin) */
